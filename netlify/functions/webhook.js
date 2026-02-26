@@ -3,28 +3,9 @@
 
 let pendingNotifications = [];
 
-const SOUND_MAPPINGS = {
-  // Sales & Revenue
-  'sale': { sound: 'cash-register.mp3', message: 'Cha-ching! New sale!' },
-  'new_sale': { sound: 'cash-register.mp3', message: 'You just got a sale!' },
-  'payment': { sound: 'cash-register.mp3', message: 'Payment received!' },
-  'stripe.payment_intent.succeeded': { sound: 'cash-register.mp3', message: 'Stripe payment received!' },
-  'shopify.orders.create': { sound: 'cash-register.mp3', message: 'New Shopify order!' },
-
-  // Leads & Marketing
-  'lead': { sound: 'notification.mp3', message: 'New lead!' },
-  'new_lead': { sound: 'notification.mp3', message: 'New lead just came in!' },
-  'form_submission': { sound: 'notification.mp3', message: 'Form submitted!' },
-  'gohighlevel.contact.create': { sound: 'notification.mp3', message: 'New GHL contact!' },
-
-  // Fun / Custom
-  'kids_snuck_out': { sound: 'alarm.mp3', message: 'Alert! Motion detected!' },
-  'doorbell': { sound: 'doorbell.mp3', message: 'Someone is at the door!' },
-  'wake_up': { sound: 'alarm.mp3', message: 'Wake up!' },
-
-  // Default
-  'default': { sound: 'notification.mp3', message: 'New notification!' }
-};
+// Single message for all webhooks
+const DEFAULT_MESSAGE = "You have a new order";
+const DEFAULT_SOUND = "new-order.mp3";
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -77,36 +58,12 @@ exports.handler = async (event, context) => {
         body = { raw: event.body };
       }
 
-      // Determine event type from various webhook formats
-      const eventType =
-        body.event_type ||           // Generic
-        body.type ||                 // Stripe
-        body.topic ||                // Shopify
-        body.event ||                // Custom
-        event.queryStringParameters?.event ||  // URL param
-        'default';
-
-      // Get sound mapping
-      const mapping = SOUND_MAPPINGS[eventType] || SOUND_MAPPINGS['default'];
-
-      // Extract useful data
-      const amount = body.amount || body.data?.object?.amount || body.total_price || null;
-      const customerName = body.customer_name || body.data?.object?.customer_name || body.customer?.first_name || null;
-      const customMessage = body.message || body.custom_message || null;
-      const customSound = body.sound || body.custom_sound || null;
-
-      // Build notification
+      // Build notification - always the same message
       const notification = {
         id: Date.now().toString(36) + Math.random().toString(36).substr(2),
         timestamp: new Date().toISOString(),
-        event_type: eventType,
-        sound: customSound || mapping.sound,
-        message: customMessage || mapping.message,
-        data: {
-          amount: amount ? (amount / 100).toFixed(2) : null,  // Convert cents to dollars
-          customer_name: customerName,
-          raw_event: eventType
-        }
+        sound: DEFAULT_SOUND,
+        message: DEFAULT_MESSAGE
       };
 
       // Queue notification
