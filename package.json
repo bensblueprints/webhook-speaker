@@ -1,0 +1,27 @@
+{
+  "name": "webhook-speaker",
+  "version": "1.0.0",
+  "description": "WiFi-connected speaker that plays custom sounds when webhooks are received - sales alerts, lead notifications, custom announcements",
+  "main": "index.js",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'",
+    "test": "node test/test-webhook.js"
+  },
+  "keywords": [
+    "webhook",
+    "speaker",
+    "iot",
+    "esp32",
+    "notifications",
+    "sales-alerts"
+  ],
+  "author": "Benjamin Tate",
+  "license": "MIT",
+  "dependencies": {
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.4.0"
+  }
+}

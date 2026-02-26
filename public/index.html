@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Speaker - Real-Time Audio Notifications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: #a0a0a0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #00d9ff;
+        }
+
+        .feature-card p {
+            color: #a0a0a0;
+            line-height: 1.6;
+        }
+
+        .use-cases {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 4rem 0;
+        }
+
+        .use-cases h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #00ff88;
+        }
+
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .use-case {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .use-case-icon {
+            font-size: 2rem;
+        }
+
+        .api-section {
+            margin: 4rem 0;
+        }
+
+        .api-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #00d9ff;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-block pre {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #c9d1d9;
+        }
+
+        .code-label {
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-form {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .test-form h3 {
+            margin-bottom: 1rem;
+            color: #00ff88;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #a0a0a0;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d9ff, #00ff88);
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .response-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .response-box.success {
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+
+        .response-box.error {
+            border: 1px solid #ff4444;
+            color: #ff4444;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: #666;
+        }
+
+        footer a {
+            color: #00d9ff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🔊</div>
+            <h1>Webhook Speaker</h1>
+            <p class="tagline">Turn any webhook into an instant audio notification. Sales, leads, alerts - hear them the moment they happen.</p>
+        </header>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Sales Alerts</h3>
+                <p>Hear the sweet sound of a cash register every time you make a sale. Works with Stripe, Shopify, WooCommerce, and more.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Lead Notifications</h3>
+                <p>Never miss a new lead again. Get instant audio alerts from your CRM, form submissions, or landing pages.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Custom Sounds</h3>
+                <p>Upload your own MP3 files or use our preset sounds. Make it say whatever you want!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔌</div>
+                <h3>Easy Setup</h3>
+                <p>Works with any ESP32 board. Connect to WiFi, point to your webhook URL, and you're done.</p>
+            </div>
+        </div>
+
+        <div class="use-cases">
+            <h2>What Will You Use It For?</h2>
+            <div class="use-case-grid">
+                <div class="use-case">
+                    <span class="use-case-icon">🛒</span>
+                    <span>"You just got a sale!"</span>
+                </div>
+                <div class="use-case">
+                    <span class="use-case-icon">📝</span>
+                    <span>"New lead from Facebook"</span>
+                </div>
+                <div class="use-case">
+                    <span class="use-case-icon">📧</span>
+                    <span>"New email subscriber"</span>
+                </div>
+                <div class="use-case">
+                    <span class="use-case-icon">🚪</span>
+                    <span>"Someone's at the door"</span>
+                </div>
+                <div class="use-case">
+                    <span class="use-case-icon">👀</span>
+                    <span>"Motion detected!"</span>
+                </div>
+                <div class="use-case">
+                    <span class="use-case-icon">⚠️</span>
+                    <span>"Server is down!"</span>
+                </div>
+                <div class="use-case">
+                    <span class="use-case-icon">📦</span>
+                    <span>"Order shipped!"</span>
+                </div>
+                <div class="use-case">
+                    <span class="use-case-icon">😂</span>
+                    <span>"Kids just snuck out"</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <h2>API Documentation</h2>
+
+            <p class="code-label">Endpoint:</p>
+            <div class="code-block">
+                <pre>POST /.netlify/functions/webhook</pre>
+            </div>
+
+            <p class="code-label">Basic Example - Trigger a sale notification:</p>
+            <div class="code-block">
+                <pre>curl -X POST https://YOUR-SITE.netlify.app/.netlify/functions/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"event_type": "sale", "amount": 9999}'</pre>
+            </div>
+
+            <p class="code-label">Custom Message:</p>
+            <div class="code-block">
+                <pre>{
+  "event_type": "custom",
+  "message": "Wake up! Your kids just snuck out!",
+  "sound": "alarm.mp3"
+}</pre>
+            </div>
+
+            <p class="code-label">Supported Event Types:</p>
+            <div class="code-block">
+                <pre>sale, new_sale, payment    → Cash register sound
+lead, new_lead             → Notification sound
+doorbell                   → Doorbell sound
+alarm, wake_up             → Alarm sound
+stripe.payment_intent.succeeded
+shopify.orders.create
+gohighlevel.contact.create</pre>
+            </div>
+        </div>
+
+        <div class="test-form">
+            <h3>🧪 Test the Webhook</h3>
+            <div class="form-group">
+                <label>Event Type</label>
+                <select id="eventType">
+                    <option value="sale">Sale (Cash Register)</option>
+                    <option value="new_lead">New Lead (Notification)</option>
+                    <option value="doorbell">Doorbell</option>
+                    <option value="alarm">Alarm</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Custom Message (optional)</label>
+                <input type="text" id="customMessage" placeholder="You just made $500!">
+            </div>
+            <button class="btn btn-primary" onclick="testWebhook()">Send Test Webhook</button>
+            <div id="responseBox" class="response-box"></div>
+        </div>
+
+        <footer>
+            <p>Built by <a href="https://advancedmarketing.co">Advanced Marketing</a></p>
+            <p style="margin-top: 0.5rem;">Open source on <a href="https://github.com/bensblueprints/webhook-speaker">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        async function testWebhook() {
+            const eventType = document.getElementById('eventType').value;
+            const customMessage = document.getElementById('customMessage').value;
+            const responseBox = document.getElementById('responseBox');
+
+            const payload = {
+                event_type: eventType,
+                amount: Math.floor(Math.random() * 50000) + 1000  // Random amount
+            };
+
+            if (customMessage) {
+                payload.message = customMessage;
+            }
+
+            try {
+                const response = await fetch('/.netlify/functions/webhook', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                responseBox.style.display = 'block';
+                responseBox.className = 'response-box success';
+                responseBox.textContent = '✅ ' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseBox.style.display = 'block';
+                responseBox.className = 'response-box error';
+                responseBox.textContent = '❌ Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
