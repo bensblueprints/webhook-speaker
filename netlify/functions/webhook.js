@@ -74,7 +74,7 @@ exports.handler = async (event, context) => {
         pendingNotifications = pendingNotifications.slice(-100);
       }
 
-      console.log(`[Webhook Speaker] Queued notification: ${eventType}`, notification);
+      console.log('[Webhook Speaker] Queued: You have a new order');
 
       return {
         statusCode: 200,
